@@ -37,16 +37,45 @@ UML.Element.prototype.attach = function(b, x, y) {
 
 UML.Element.prototype.getX = function() {
     return this.obj.type === 'circle' ? this.obj.attr('cx') : this.obj.attr('x');
+    switch (this.obj.type) {
+        case 'circle':
+            return this.obj.attr('cx');
+        case 'path':
+            return this.ox ? this.ox : 0;
+        default:
+            return this.obj.attr('x');
+    }
+    return this;
 };
 UML.Element.prototype.getY = function() {
     return this.obj.type === 'circle' ? this.obj.attr('cy') : this.obj.attr('y');
 };
 UML.Element.prototype.setX = function(x) {
-    this.obj.type === 'circle' ? this.obj.attr('cx', x) : this.obj.attr('x', x);
+    switch (this.obj.type) {
+        case 'circle':
+            this.obj.attr('cx', x);
+            break;
+        case 'path':
+            //this.obj.translate(x, this.getY());
+            break;
+        default:
+            this.obj.attr('x', x);
+            break;
+    }
     return this;
 };
 UML.Element.prototype.setY = function(y) {
-    this.obj.type === 'circle' ? this.obj.attr('cy', y) : this.obj.attr('y', y);
+    switch (this.obj.type) {
+        case 'circle':
+            this.obj.attr('cy', y);
+            break;
+        case 'path':
+            this.obj.translate(this.getY(), y);
+            break;
+        default:
+            this.obj.attr('y', y);
+            break;
+    }
     return this;
 };
 
@@ -68,8 +97,15 @@ UML.Movable = function(obj) {
         }, 500, ">");
     }, move = function(dx, dy) {
         var updateElement = function(element) {
-            element.setX(element.ox + dx);
-            element.setY(element.oy + dy);
+            if (element.obj.type === 'path') {
+                element.setX(dx - element.ox);
+                element.setY(dy - element.oy);
+                element.ox = dx;
+                element.oy = dy;
+            } else {
+                element.setX(element.ox + dx);
+                element.setY(element.oy + dy);
+            }
             for (var i = 0; i < element.connections.length; i++) {
                 UML.paper.connection(element.connections[i]);
             }
@@ -147,6 +183,23 @@ UML.Circle = function(name, x, y) {
 };
 
 UML.Circle.prototype = UML.construct_prototype(UML.Figure);
+
+UML.Icon = function(path, x, y, scale) {
+    x = x ? x : 0;
+    y = y ? y : 0;
+    UML.Element.apply(this, [UML.paper.path(path)]);
+    if (scale) {
+        this.obj.scale(scale);
+    }
+    this.setX(x);
+    this.setY(y);
+    this.obj.attr({
+        fill: '#000', 
+        stroke: 'none'
+    });
+};
+
+UML.Icon.prototype = UML.construct_prototype(UML.Element);
 
 UML.Text = function(text, x, y) {
     x = x ? x : 0;

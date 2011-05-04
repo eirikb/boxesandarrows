@@ -50,6 +50,7 @@ $(function() {
             i = 0;
             for (k in template.Resources) {
                 element = setup(template.Resources[k], new UML.Box(k, 50 + 200 * i++, 200));
+               // element.attach(new UML.Icon(icon.linux));
                 for (l in template.Resources[k]) {
                     prop = element.addProperty(l, template.Resources[k][l]);
                     element2 = template.Resources[k][l].element;
@@ -58,8 +59,6 @@ $(function() {
                     }
                 }
             }
-            console.log($.parseJSON(data))
-            console.log(template)
         });
     };
 
