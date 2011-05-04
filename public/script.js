@@ -39,7 +39,7 @@ $(function() {
     
     var hack = function (aws) {
         $.get('aws/' + aws, function(data) {
-            var i, k, l, element, element2, prop, template = new Template($.parseJSON(data), profile);
+            var i, k, l, element, element2, prop, template = new Template($.parseJSON(data), new Profile());
             i = 0;
             for (k in template.Parameters) {
                 setup(template.Parameters[k], new UML.Circle(k, 50 + 150 * i++, 100));
