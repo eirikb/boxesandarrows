@@ -32,17 +32,14 @@ $(function() {
         });
     }, setup = function(template, element) {
         element.template = template;
-        template.element = element;
+        template.meta.element = element;
         onClick(element.obj);
         return element;
     };
     
-
-
-
     var hack = function (aws) {
         $.get('aws/' + aws, function(data) {
-            var i, k, l, element, element2, prop, template = new Template($.parseJSON(data));
+            var i, k, l, element, element2, prop, template = new Template($.parseJSON(data), profile);
             i = 0;
             for (k in template.Parameters) {
                 setup(template.Parameters[k], new UML.Circle(k, 50 + 150 * i++, 100));
@@ -50,15 +47,18 @@ $(function() {
             i = 0;
             for (k in template.Resources) {
                 element = setup(template.Resources[k], new UML.Box(k, 50 + 200 * i++, 200));
-               // element.attach(new UML.Icon(icon.linux));
+                // element.attach(new UML.Icon(icon.linux));
                 for (l in template.Resources[k]) {
                     prop = element.addProperty(l, template.Resources[k][l]);
-                    element2 = template.Resources[k][l].element;
-                    if (element2) {
-                        prop.connect(element2);
+                    if (template.Resources[k][l].constructor === Ref) {
+                        element2 = template.Resources[k][l].ref.meta.element;
+                        if (element2) {
+                            prop.connect(element2);
+                        }
                     }
                 }
             }
+            console.log(template, $.parseJSON(data));
         });
     };
 
