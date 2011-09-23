@@ -23,66 +23,57 @@ baa.Element.prototype.attach = function(b, x, y) {
 };
 */
 
-    function getX(obj) {
-        return this.obj.type === 'circle' ? this.obj.attr('cx') : this.obj.attr('x');
-        switch (this.obj.type) {
-        case 'circle':
-            return this.obj.attr('cx');
-        case 'path':
-            return this.ox ? this.ox: 0;
-        default:
-            return this.obj.attr('x');
-        }
-        return this;
-    }
+    Raphael.el.getX = function() {
+        return this.type === 'circle' ? this.attr('cx') : this.attr('x');
+    };
 
-    function getY(obj) {
-        return this.obj.type === 'circle' ? this.obj.attr('cy') : this.obj.attr('y');
-    }
+    Raphael.el.getY = function() {
+        return this.type === 'circle' ? this.attr('cy') : this.attr('y');
+    };
 
-    function setX(obj, x) {
-        switch (this.obj.type) {
+    Raphael.el.setX = function(x) {
+        switch (this.type) {
         case 'circle':
             this.obj.attr('cx', x);
             break;
         case 'path':
-            //this.obj.translate(x, this.getY());
+            this.translate(x, this.getY());
             break;
         default:
-            this.obj.attr('x', x);
+            this.attr('x', x);
             break;
         }
         return this;
-    }
+    };
 
-    function setY(obj, y) {
-        switch (this.obj.type) {
+    Raphael.el.setY = function(y) {
+        switch (this.type) {
         case 'circle':
-            this.obj.attr('cy', y);
+            this.attr('cy', y);
             break;
         case 'path':
-            this.obj.translate(this.getY(), y);
+            this.translate(this.getY(), y);
             break;
         default:
-            this.obj.attr('y', y);
+            this.attr('y', y);
             break;
         }
         return this;
-    }
+    };
 
     function draggable(obj) {
         var self = this;
 
         var start = function() {
-            var setOriginalPos = function(element) {
-                element.ox = element.getX();
-                element.oy = element.getY();
+            var setOriginalPos = function(obj) {
+                obj.ox = obj.getX();
+                obj.oy = obj.getY();
             },
             i;
-            setOriginalPos(self);
-            for (i = 0; i < self.attached.length; i++) {
-                setOriginalPos(self.attached[i]);
-            }
+            setOriginalPos(obj);
+            //for (i = 0; i < self.attached.length; i++) {
+                //setOriginalPos(self.attached[i]);
+            //}
             this.animate({
                 'stroke-width': 2
             },
@@ -90,26 +81,26 @@ baa.Element.prototype.attach = function(b, x, y) {
         },
         move = function(dx, dy) {
             var updateElement = function(element) {
-                if (element.obj.type === 'path') {
-                    element.setX(dx - element.ox);
-                    element.setY(dy - element.oy);
-                    element.ox = dx;
-                    element.oy = dy;
+                if (obj.type === 'path') {
+                    obj.setX(dx - obj.ox);
+                    obj.setY(dy - obj.oy);
+                    obj.ox = dx;
+                    obj.oy = dy;
                 } else {
-                    element.setX(element.ox + dx);
-                    element.setY(element.oy + dy);
+                    obj.setX(obj.ox + dx);
+                    obj.setY(obj.oy + dy);
                 }
-                for (var i = 0; i < element.connections.length; i++) {
-                    baa.paper.connection(element.connections[i]);
-                }
-                for (i = 0; i < element.attached.length; i++) {
-                    updateElement(element.attached[i]);
-                }
+//                for (var i = 0; i < obj.connections.length; i++) {
+//                    baa.paper.connection(obj.connections[i]);
+//                }
+//                for (i = 0; i < obj.attached.length; i++) {
+//                    updateElement(obj.attached[i]);
+//                }
             };
             updateElement(self);
         },
         up = function() {
-            self.obj.animate({
+            obj.animate({
                 'stroke-width': 1
             },
             500, ">");
@@ -140,10 +131,12 @@ baa.Element.prototype.attach = function(b, x, y) {
     }
 
     Raphael.fn.box = function(name, x, y) {
-        //baa.Figure.apply(this, [baa.paper.rect(x, y, 100, 100)]);
-        var obj = this.rect(x, y, 100, 100);
-        obj.attr('fill', 'hsb(.6, 1, 1)'),
-            r = this;
+        var obj = this.rect(x, y, 100, 100),
+        r = this;
+
+        obj.attr('fill', 'hsb(.6, 1, 1)');
+
+        draggable(obj);
 
         var addProperty = function(name, value) {
             var string = value ? name + ': ' + value: name;
@@ -165,14 +158,14 @@ baa.Element.prototype.attach = function(b, x, y) {
         addProperty(name);
     };
 
-    Raphael.fn.Circle = function(name, x, y) {
+    Raphael.fn.circle = function(name, x, y) {
         baa.Figure.apply(this, [baa.paper.circle(x, y, 50)]);
         this.obj.attr('fill', 'hsb(.4, 1, 1)');
         var text = this.text(name);
         this.attach(text, 0, 0);
     };
 
-    Raphael.fn.Icon = function(path, x, y, scale) {
+    Raphael.fn.icon = function(path, x, y, scale) {
         x = x ? x: 0;
         y = y ? y: 0;
         baa.Element.apply(this, [baa.paper.path(path)]);
