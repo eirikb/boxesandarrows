@@ -1,8 +1,7 @@
 /**
  * Boxes and arrows using Raphaeljs
  * 
- * This is basically a realtime overlay hack of a Raphael SVG
- * elements (rect, circle, text etc) is aggregated within these objects
+ * This is basically a overlay hack of Raphael
  * 
  * @author Eirik Brandtzæg <eirikb@eirikb.no>
  * @license The MIT license.
@@ -140,38 +139,40 @@ baa.Element.prototype.attach = function(b, x, y) {
         obj.node.style.cursor = 'move';
     }
 
-    Raphael.fn.Box = function(name, x, y) {
-        baa.Figure.apply(this, [baa.paper.rect(x, y, 100, 100)]);
-        this.obj.attr('fill', 'hsb(.6, 1, 1)');
-        this.addProperty(name);
+    Raphael.fn.box = function(name, x, y) {
+        //baa.Figure.apply(this, [baa.paper.rect(x, y, 100, 100)]);
+        var obj = this.rect(x, y, 100, 100);
+        obj.attr('fill', 'hsb(.6, 1, 1)'),
+            r = this;
 
         var addProperty = function(name, value) {
             var string = value ? name + ': ' + value: name;
             if (string.length > 25) {
                 string = string.substring(0, 25) + '...';
             }
-            var text = new baa.Text(string),
-            width = this.obj.attr('width'),
-            textWidth = text.obj.getBBox().width;
-            this.attach(text, 5 + (textWidth / 2), 10 + this.attached.length * 10);
-            if (textWidth > width) {
-                this.obj.attr('width', textWidth + 10);
-            }
-            if (this.attached.length > 8) {
-                this.obj.attr('height', 100 + (this.attached.length - 8) * 10);
-            }
+            var text = r.text(string),
+            width = obj.attr('width'),
+            textWidth = text.getBBox().width;
+//            this.attach(text, 5 + (textWidth / 2), 10 + this.attached.length * 10);
+//            if (textWidth > width) {
+//                this.obj.attr('width', textWidth + 10);
+//            }
+//            if (this.attached.length > 8) {
+//                this.obj.attr('height', 100 + (this.attached.length - 8) * 10);
+//            }
             return text;
         };
+        addProperty(name);
     };
 
-    Raphael.Circle = function(name, x, y) {
+    Raphael.fn.Circle = function(name, x, y) {
         baa.Figure.apply(this, [baa.paper.circle(x, y, 50)]);
         this.obj.attr('fill', 'hsb(.4, 1, 1)');
-        var text = new baa.Text(name);
+        var text = this.text(name);
         this.attach(text, 0, 0);
     };
 
-    Raphael.Icon = function(path, x, y, scale) {
+    Raphael.fn.Icon = function(path, x, y, scale) {
         x = x ? x: 0;
         y = y ? y: 0;
         baa.Element.apply(this, [baa.paper.path(path)]);
@@ -186,7 +187,7 @@ baa.Element.prototype.attach = function(b, x, y) {
         });
     };
 
-    Raphael.Text = function(text, x, y) {
+    Raphael.fn.text = function(text, x, y) {
         x = x ? x: 0;
         y = y ? y: 0;
         baa.Element.apply(this, [baa.paper.text(x, y, text)]);
