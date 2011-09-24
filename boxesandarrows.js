@@ -8,20 +8,7 @@
  */
 
 (function(Raphael) {
-    /*
-baa.Element.prototype.connect = function(b) {
-	var c = baa.paper.connection(this.obj, b.obj, '#9FD6D0', '#000');
-	this.connections.push(c);
-	b.connections.push(c);
-	return this;
-};
-baa.Element.prototype.attach = function(b, x, y) {
-	b.setX(this.getX() + x);
-	b.setY(this.getY() + y);
-	this.attached.push(b);
-	return this;
-};
-*/
+    Raphael.fn.baa = {};
 
     Raphael.el.getX = function() {
         return this.type === 'circle' ? this.attr('cx') : this.attr('x');
@@ -34,7 +21,7 @@ baa.Element.prototype.attach = function(b, x, y) {
     Raphael.el.setX = function(x) {
         switch (this.type) {
         case 'circle':
-            this.obj.attr('cx', x);
+            this.attr('cx', x);
             break;
         case 'path':
             this.translate(x, this.getY());
@@ -71,9 +58,6 @@ baa.Element.prototype.attach = function(b, x, y) {
             },
             i;
             setOriginalPos(obj);
-            //for (i = 0; i < self.attached.length; i++) {
-            //setOriginalPos(self.attached[i]);
-            //}
             this.animate({
                 'stroke-width': 2
             },
@@ -90,12 +74,6 @@ baa.Element.prototype.attach = function(b, x, y) {
                     obj.setX(obj.ox + dx);
                     obj.setY(obj.oy + dy);
                 }
-                //                for (var i = 0; i < obj.connections.length; i++) {
-                //                    baa.paper.connection(obj.connections[i]);
-                //                }
-                //                for (i = 0; i < obj.attached.length; i++) {
-                //                    updateElement(obj.attached[i]);
-                //                }
             };
             updateElement(self);
         },
@@ -108,62 +86,21 @@ baa.Element.prototype.attach = function(b, x, y) {
         obj.drag(move, start, up);
     }
 
-    Raphael.fn.box = function(name, x, y) {
-        var obj = this.rect(x, y, 100, 100),
-        r = this;
-
-        hover(obj);
+    Raphael.fn.baa.box = function(x, y) {
+        var obj = this.rect(x, y, 100, 100);
 
         obj.attr('fill', 'hsb(.6, 1, 1)');
 
+        hover(obj);
         draggable(obj);
-
-        var addProperty = function(name, value) {
-            var string = value ? name + ': ' + value: name;
-            if (string.length > 25) {
-                string = string.substring(0, 25) + '...';
-            }
-            var text = r.text(string),
-            width = obj.attr('width'),
-            textWidth = text.getBBox().width;
-            //            this.attach(text, 5 + (textWidth / 2), 10 + this.attached.length * 10);
-            //            if (textWidth > width) {
-            //                this.obj.attr('width', textWidth + 10);
-            //            }
-            //            if (this.attached.length > 8) {
-            //                this.obj.attr('height', 100 + (this.attached.length - 8) * 10);
-            //            }
-            return text;
-        };
-        addProperty(name);
     };
 
-    Raphael.fn.circle = function(name, x, y) {
-        baa.Figure.apply(this, [baa.paper.circle(x, y, 50)]);
-        this.obj.attr('fill', 'hsb(.4, 1, 1)');
-        var text = this.text(name);
-        this.attach(text, 0, 0);
-    };
+    Raphael.fn.baa.circle = function(x, y) {
+        var obj = this.circle(x, y, 50);
+        obj.attr('fill', 'hsb(.4, 1, 1)');
 
-    Raphael.fn.icon = function(path, x, y, scale) {
-        x = x ? x: 0;
-        y = y ? y: 0;
-        baa.Element.apply(this, [baa.paper.path(path)]);
-        if (scale) {
-            this.obj.scale(scale);
-        }
-        this.setX(x);
-        this.setY(y);
-        this.obj.attr({
-            fill: '#000',
-            stroke: 'none'
-        });
-    };
-
-    Raphael.fn.text = function(text, x, y) {
-        x = x ? x: 0;
-        y = y ? y: 0;
-        baa.Element.apply(this, [baa.paper.text(x, y, text)]);
+        hover(obj);
+        draggable(obj);
     };
 
     function hover(obj) {
