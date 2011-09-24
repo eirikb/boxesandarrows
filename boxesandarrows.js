@@ -72,7 +72,7 @@ baa.Element.prototype.attach = function(b, x, y) {
             i;
             setOriginalPos(obj);
             //for (i = 0; i < self.attached.length; i++) {
-                //setOriginalPos(self.attached[i]);
+            //setOriginalPos(self.attached[i]);
             //}
             this.animate({
                 'stroke-width': 2
@@ -90,12 +90,12 @@ baa.Element.prototype.attach = function(b, x, y) {
                     obj.setX(obj.ox + dx);
                     obj.setY(obj.oy + dy);
                 }
-//                for (var i = 0; i < obj.connections.length; i++) {
-//                    baa.paper.connection(obj.connections[i]);
-//                }
-//                for (i = 0; i < obj.attached.length; i++) {
-//                    updateElement(obj.attached[i]);
-//                }
+                //                for (var i = 0; i < obj.connections.length; i++) {
+                //                    baa.paper.connection(obj.connections[i]);
+                //                }
+                //                for (i = 0; i < obj.attached.length; i++) {
+                //                    updateElement(obj.attached[i]);
+                //                }
             };
             updateElement(self);
         },
@@ -105,34 +105,14 @@ baa.Element.prototype.attach = function(b, x, y) {
             },
             500, ">");
         };
-        obj.drag(start, move, up);
-    }
-
-    function figure(obj) {
-        obj.attr({
-            fill: 'white',
-            opacity: 0.75,
-            'stroke-linecap': 'round',
-            'stroke-linejoin': 'round'
-        });
-        obj[0].onmouseover = function() {
-            obj.animate({
-                opacity: 0.60
-            },
-            500, '>');
-        };
-        obj[0].onmouseout = function() {
-            obj.animate({
-                opacity: 0.75
-            },
-            500, '>');
-        };
-        obj.node.style.cursor = 'move';
+        obj.drag(move, start, up);
     }
 
     Raphael.fn.box = function(name, x, y) {
         var obj = this.rect(x, y, 100, 100),
         r = this;
+
+        hover(obj);
 
         obj.attr('fill', 'hsb(.6, 1, 1)');
 
@@ -146,13 +126,13 @@ baa.Element.prototype.attach = function(b, x, y) {
             var text = r.text(string),
             width = obj.attr('width'),
             textWidth = text.getBBox().width;
-//            this.attach(text, 5 + (textWidth / 2), 10 + this.attached.length * 10);
-//            if (textWidth > width) {
-//                this.obj.attr('width', textWidth + 10);
-//            }
-//            if (this.attached.length > 8) {
-//                this.obj.attr('height', 100 + (this.attached.length - 8) * 10);
-//            }
+            //            this.attach(text, 5 + (textWidth / 2), 10 + this.attached.length * 10);
+            //            if (textWidth > width) {
+            //                this.obj.attr('width', textWidth + 10);
+            //            }
+            //            if (this.attached.length > 8) {
+            //                this.obj.attr('height', 100 + (this.attached.length - 8) * 10);
+            //            }
             return text;
         };
         addProperty(name);
@@ -185,5 +165,21 @@ baa.Element.prototype.attach = function(b, x, y) {
         y = y ? y: 0;
         baa.Element.apply(this, [baa.paper.text(x, y, text)]);
     };
+
+    function hover(obj) {
+        obj[0].onmouseover = function() {
+            obj.animate({
+                opacity: 0.75
+            },
+            500, '>');
+        };
+        obj[0].onmouseout = function() {
+            obj.animate({
+                opacity: 1
+            },
+            500, '>');
+        };
+        obj.node.style.cursor = 'move';
+    }
 } (window.Raphael));
 
